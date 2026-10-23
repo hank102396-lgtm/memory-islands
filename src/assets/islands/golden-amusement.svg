@@ -1,0 +1,31 @@
+<svg width="640" height="420" viewBox="0 0 640 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="parkTop" x1="120" y1="105" x2="510" y2="270" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE9A2"/><stop offset=".5" stop-color="#FFB756"/><stop offset="1" stop-color="#E87366"/></linearGradient>
+    <linearGradient id="parkRock" x1="180" y1="230" x2="400" y2="390" gradientUnits="userSpaceOnUse"><stop stop-color="#C78678"/><stop offset="1" stop-color="#4A3865"/></linearGradient>
+    <linearGradient id="pinkTower" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#FFB57D"/><stop offset="1" stop-color="#DE587B"/></linearGradient>
+    <filter id="parkGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="320" cy="375" rx="205" ry="23" fill="#FFB95D" opacity=".3" filter="url(#parkGlow)"/>
+  <path d="M101 205C113 275 165 335 262 369C306 385 363 384 407 366C489 333 535 270 539 201L101 205Z" fill="url(#parkRock)" stroke="#FFD991" stroke-width="2"/>
+  <ellipse cx="320" cy="196" rx="220" ry="91" fill="url(#parkTop)" stroke="#FFE7A0" stroke-width="3"/>
+  <path d="M137 200C184 245 440 266 507 195" stroke="#FFF1B7" stroke-opacity=".35" stroke-width="10"/>
+  <g filter="url(#parkGlow)">
+    <circle cx="190" cy="151" r="65" stroke="#FFF0A4" stroke-width="7"/>
+    <circle cx="190" cy="151" r="7" fill="#FF6E85"/>
+    <path d="M190 86V216M125 151H255M144 105L236 197M236 105L144 197" stroke="#FFD76D" stroke-width="4"/>
+    <path d="M159 215L190 151L221 215" stroke="#D85D78" stroke-width="7"/>
+    <circle cx="190" cy="88" r="9" fill="#F16D88"/><circle cx="253" cy="151" r="9" fill="#68C7C5"/><circle cx="190" cy="214" r="9" fill="#7F85E7"/><circle cx="127" cy="151" r="9" fill="#F3A55A"/>
+  </g>
+  <g>
+    <path d="M330 203V125L365 89L400 125V203" fill="url(#pinkTower)" stroke="#FFE3A0" stroke-width="3"/>
+    <path d="M312 127L365 66L418 127" fill="#FFCF77" stroke="#FFEAB1" stroke-width="3"/>
+    <path d="M365 66V45" stroke="#FFEAB1" stroke-width="4"/><path d="M365 45L389 55L365 64" fill="#F16478"/>
+    <rect x="350" y="151" width="30" height="52" rx="14" fill="#6D4668"/><circle cx="350" cy="135" r="7" fill="#FFF1B2"/><circle cx="380" cy="135" r="7" fill="#FFF1B2"/>
+  </g>
+  <g>
+    <path d="M423 207C438 167 449 160 461 175C474 191 489 179 500 155" stroke="#6D537A" stroke-width="6" fill="none"/>
+    <path d="M445 203C453 187 465 188 473 202" stroke="#75D7D0" stroke-width="8" fill="none"/>
+    <circle cx="461" cy="174" r="9" fill="#FFEA90"/><circle cx="500" cy="155" r="7" fill="#F26D81"/>
+  </g>
+  <g fill="#FFF0A9" filter="url(#parkGlow)"><circle cx="278" cy="109" r="5"/><circle cx="435" cy="111" r="4"/><circle cx="105" cy="153" r="4"/><circle cx="518" cy="189" r="4"/></g>
+</svg>

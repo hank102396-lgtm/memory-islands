@@ -1,0 +1,20 @@
+<svg width="640" height="420" viewBox="0 0 640 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="forestTop" x1="115" y1="102" x2="515" y2="282" gradientUnits="userSpaceOnUse"><stop stop-color="#D8F6B8"/><stop offset=".48" stop-color="#83C873"/><stop offset="1" stop-color="#2C7570"/></linearGradient>
+    <linearGradient id="forestRock" x1="170" y1="228" x2="425" y2="385" gradientUnits="userSpaceOnUse"><stop stop-color="#5C9E72"/><stop offset="1" stop-color="#1C4E57"/></linearGradient>
+    <filter id="forestGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="320" cy="375" rx="205" ry="23" fill="#93E69B" opacity=".25" filter="url(#forestGlow)"/>
+  <path d="M101 205C113 275 165 335 262 369C306 385 363 384 407 366C489 333 535 270 539 201L101 205Z" fill="url(#forestRock)" stroke="#C7F3AB" stroke-width="2"/>
+  <ellipse cx="320" cy="196" rx="220" ry="91" fill="url(#forestTop)" stroke="#D1F5B9" stroke-width="3"/>
+  <path d="M133 202C193 226 233 180 274 210C315 240 361 184 406 213C448 240 484 191 518 200" stroke="#C9F4B3" stroke-opacity=".45" stroke-width="13" stroke-linecap="round"/>
+  <g>
+    <path d="M153 208L182 126L211 208H153Z" fill="#2C6B54"/><path d="M163 178L182 106L201 178H163Z" fill="#3B855E"/><path d="M173 145L182 87L191 145H173Z" fill="#67AD68"/>
+    <path d="M442 211L471 134L500 211H442Z" fill="#255A50"/><path d="M452 178L471 112L490 178H452Z" fill="#3C8862"/><path d="M462 145L471 94L480 145H462Z" fill="#75B96A"/>
+  </g>
+  <path d="M260 220L321 150L382 220H260Z" fill="#EFA575" stroke="#FFE0A8" stroke-width="3"/>
+  <path d="M321 150V220" stroke="#FFE0A8" stroke-width="3"/><path d="M295 220V190C295 180 304 174 313 174C322 174 329 180 329 190V220" fill="#B9625C"/>
+  <path d="M392 225L407 210L422 225M398 220L413 205L428 220" stroke="#80513E" stroke-width="7" stroke-linecap="round"/>
+  <g filter="url(#forestGlow)"><path d="M418 224C408 210 420 199 425 188C430 200 441 209 431 224C428 228 422 228 418 224Z" fill="#FFB84D"/><path d="M422 219C418 211 424 206 426 200C431 209 433 216 428 221" fill="#FFF2A1"/></g>
+  <g fill="#FFF0A8"><circle cx="225" cy="125" r="5"/><circle cx="401" cy="116" r="4"/><circle cx="520" cy="182" r="4"/><circle cx="132" cy="173" r="3"/></g>
+</svg>

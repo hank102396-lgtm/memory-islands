@@ -1,0 +1,152 @@
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import IslandSelector from './presentation/components/IslandSelector.vue'
+import WelcomeScene from './presentation/components/WelcomeScene.vue'
+import LetterScene from './presentation/components/LetterScene.vue'
+import IslandView from './presentation/components/IslandView.vue'
+import MemoryModal from './presentation/components/MemoryModal.vue'
+import AddMemoryModal from './presentation/components/AddMemoryModal.vue'
+import { ISLANDS, getIslandById } from './domain/island'
+import { firebaseService } from './infrastructure/firebaseService'
+import { createFetchMemoriesUseCase } from './usecases/fetchMemoriesUseCase'
+import { createCreateMemoryUseCase } from './usecases/createMemoryUseCase'
+import { createDeleteMemoryUseCase } from './usecases/deleteMemoryUseCase'
+
+const fetchMemories = createFetchMemoriesUseCase(firebaseService)
+const createMemory = createCreateMemoryUseCase(firebaseService)
+const deleteMemory = createDeleteMemoryUseCase(firebaseService)
+const selectedIslandId = ref(null)
+const hasEnteredWorld = ref(false)
+const hasReadLetter = ref(false)
+const focusIslandId = ref(null)
+const enteringIsland = ref(false)
+const memories = ref([])
+const allMemories = ref([])
+const selectedMemory = ref(null)
+const showAddModal = ref(false)
+const loading = ref(false)
+const saving = ref(false)
+const deleting = ref(false)
+const errorMessage = ref('')
+
+const selectedIsland = computed(() => selectedIslandId.value ? getIslandById(selectedIslandId.value) : null)
+const totalMemories = computed(() => allMemories.value.length)
+const memoriesByIsland = computed(() => Object.fromEntries(ISLANDS.map((island) => [
+  island.id,
+  allMemories.value.filter((memory) => memory.islandId === island.id),
+])))
+
+async function selectIsland(island) {
+  if (enteringIsland.value) return
+  errorMessage.value = ''
+  loading.value = true
+  enteringIsland.value = true
+  try {
+    const [loadedMemories] = await Promise.all([
+      fetchMemories(island.id),
+      new Promise((resolve) => window.setTimeout(resolve, 1350)),
+    ])
+    memories.value = loadedMemories
+    selectedIslandId.value = island.id
+  } catch (error) {
+    errorMessage.value = error.message || '記憶暫時無法載入，請稍後再試。'
+  } finally {
+    loading.value = false
+    enteringIsland.value = false
+  }
+}
+
+function goHome() {
+  selectedIslandId.value = null
+  selectedMemory.value = null
+  showAddModal.value = false
+}
+
+function returnToWelcome() {
+  selectedIslandId.value = null
+  selectedMemory.value = null
+  showAddModal.value = false
+  hasEnteredWorld.value = false
+  focusIslandId.value = null
+}
+
+function enterWorld(islandId) {
+  focusIslandId.value = islandId
+  hasEnteredWorld.value = true
+}
+
+function continueFromLetter() {
+  hasReadLetter.value = true
+}
+
+async function saveNewMemory(payload) {
+  saving.value = true
+  errorMessage.value = ''
+  try {
+    const savedMemory = await createMemory(payload)
+    allMemories.value = [savedMemory, ...allMemories.value]
+    if (selectedIslandId.value === payload.islandId) memories.value = [savedMemory, ...memories.value]
+    showAddModal.value = false
+  } catch (error) {
+    errorMessage.value = error.message || '記憶儲存失敗，請稍後再試。'
+  } finally {
+    saving.value = false
+  }
+}
+
+async function removeMemory(memory) {
+  if (!window.confirm(`確定要刪除「${memory.title}」這顆記憶球嗎？`)) return
+
+  deleting.value = true
+  errorMessage.value = ''
+  try {
+    await deleteMemory(memory)
+    memories.value = memories.value.filter((item) => item.id !== memory.id)
+    allMemories.value = allMemories.value.filter((item) => item.id !== memory.id)
+    selectedMemory.value = null
+  } catch (error) {
+    errorMessage.value = error.message || '記憶刪除失敗，請稍後再試。'
+  } finally {
+    deleting.value = false
+  }
+}
+
+onMounted(async () => {
+  // Preload a small global count for the landing page without coupling UI to storage.
+  try {
+    const results = await Promise.all(ISLANDS.map((island) => fetchMemories(island.id)))
+    allMemories.value = results.flat()
+  } catch (error) {
+    errorMessage.value = error.message || '記憶暫時無法載入。'
+  }
+})
+</script>
+
+<template>
+  <LetterScene v-if="!hasReadLetter" @continue="continueFromLetter" />
+  <WelcomeScene v-else-if="!hasEnteredWorld" @enter="enterWorld" />
+  <IslandSelector
+    v-else-if="!selectedIsland"
+    :total-memories="totalMemories"
+    :memories-by-island="memoriesByIsland"
+    :focus-island-id="focusIslandId"
+    :transitioning="enteringIsland"
+    @select="selectIsland"
+    @back="returnToWelcome"
+  />
+  <IslandView
+    v-else
+    :island="selectedIsland"
+    :memories="memories"
+    :loading="loading"
+    @back="goHome"
+    @add="showAddModal = true"
+    @select-memory="selectedMemory = $event"
+  />
+
+  <div v-if="errorMessage" class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-red-500 px-5 py-3 text-xs text-white shadow-lg">
+    {{ errorMessage }}
+  </div>
+  <MemoryModal v-if="selectedMemory" :memory="selectedMemory" :island="getIslandById(selectedMemory.islandId)" :deleting="deleting" @close="selectedMemory = null" @delete="removeMemory(selectedMemory)" />
+  <AddMemoryModal v-if="showAddModal" :default-island-id="selectedIslandId || 'golden'" :saving="saving" @close="showAddModal = false" @submit="saveNewMemory" />
+</template>

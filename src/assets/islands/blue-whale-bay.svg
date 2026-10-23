@@ -1,0 +1,37 @@
+<svg width="640" height="420" viewBox="0 0 640 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="oceanTop" x1="105" y1="105" x2="520" y2="285" gradientUnits="userSpaceOnUse"><stop stop-color="#D8F4FF"/><stop offset=".45" stop-color="#78C9F6"/><stop offset="1" stop-color="#3656B8"/></linearGradient>
+    <linearGradient id="oceanRock" x1="180" y1="228" x2="422" y2="390" gradientUnits="userSpaceOnUse"><stop stop-color="#416CB7"/><stop offset="1" stop-color="#182859"/></linearGradient>
+    <radialGradient id="moon" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(425 126) rotate(90) scale(52)"><stop stop-color="#FFF6C5"/><stop offset="1" stop-color="#FFB977"/></radialGradient>
+    <filter id="oceanGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="320" cy="375" rx="205" ry="23" fill="#70B9FF" opacity=".28" filter="url(#oceanGlow)"/>
+  <path d="M101 205C113 275 165 335 262 369C306 385 363 384 407 366C489 333 535 270 539 201L101 205Z" fill="url(#oceanRock)" stroke="#B7E7FF" stroke-width="2"/>
+  <ellipse cx="320" cy="196" rx="220" ry="91" fill="url(#oceanTop)" stroke="#C9F1FF" stroke-width="3"/>
+  <path d="M117 190C171 229 210 176 263 207C307 233 340 183 387 210C430 236 466 187 521 202" stroke="#D9F8FF" stroke-opacity=".7" stroke-width="8" stroke-linecap="round"/>
+  <!-- Background sea life: turtle, fish, jellyfish and bubbles -->
+  <g opacity=".9" filter="url(#oceanGlow)">
+    <path d="M448 222C463 204 490 204 505 220C512 228 508 241 495 246C475 253 453 243 448 222Z" fill="#5BAFBA" stroke="#D5FBFF" stroke-width="2"/>
+    <path d="M466 211C476 204 493 207 500 218C493 232 473 234 461 224C459 219 461 215 466 211Z" fill="#3D819A"/>
+    <path d="M450 220L431 209L438 230M500 221L517 211L511 231M461 242L451 256L469 247M492 243L502 256L485 248" fill="#70C9D5" stroke="#D5FBFF" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="501" cy="218" r="2.5" fill="#173E73"/>
+  </g>
+  <g fill="#B5F2FF" opacity=".86">
+    <path d="M151 168C164 155 179 157 187 168C178 179 163 180 151 168Z"/><path d="M187 168L199 159L196 170L203 177L187 168Z"/>
+    <path d="M218 144C227 135 238 137 244 145C237 153 226 154 218 144Z"/><path d="M244 145L254 138L251 147L258 152L244 145Z"/>
+    <path d="M112 216C121 207 132 209 138 217C131 225 120 226 112 216Z"/><path d="M138 217L148 210L145 219L151 224L138 217Z"/>
+  </g>
+  <g opacity=".8">
+    <path d="M350 151C337 148 334 134 344 128C350 124 361 127 364 135C367 144 360 151 350 151Z" fill="#B8E8FF"/><path d="M336 146C342 153 359 155 366 146" stroke="#B8E8FF" stroke-width="3"/><path d="M341 150L336 164M351 151V168M361 149L366 163" stroke="#B8E8FF" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#oceanGlow)">
+    <circle cx="425" cy="126" r="51" fill="url(#moon)"/>
+    <circle cx="405" cy="109" r="7" fill="#F4C58C" opacity=".5"/><circle cx="445" cy="145" r="10" fill="#F4C58C" opacity=".4"/><circle cx="432" cy="103" r="5" fill="#F4C58C" opacity=".45"/>
+  </g>
+  <path d="M177 218C204 188 227 177 263 189C287 197 309 216 351 206C382 198 395 216 378 229C359 243 314 236 280 224C244 211 214 234 177 218Z" fill="#8DE0E9" stroke="#D5FBFF" stroke-width="3"/>
+  <path d="M183 214L154 193C146 187 143 198 154 210L176 224" fill="#76CBDD" stroke="#D5FBFF" stroke-width="3"/>
+  <path d="M289 191C302 173 317 177 322 195" stroke="#72C5DA" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="351" cy="207" r="4" fill="#23457C"/>
+  <path d="M465 216C480 188 493 193 500 215M475 215C476 193 487 186 493 205" stroke="#B8F2FF" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#D7F8FF"><circle cx="132" cy="151" r="4"/><circle cx="526" cy="147" r="5"/><circle cx="279" cy="111" r="4"/><circle cx="332" cy="135" r="3"/></g>
+</svg>
