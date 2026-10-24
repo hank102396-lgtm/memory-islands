@@ -11,11 +11,13 @@ const props = defineProps({
   island: { type: Object, required: true },
   memories: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
+  arrivalMemoryId: { type: String, default: null },
 })
 
-const emit = defineEmits(['back', 'select-memory', 'add'])
+const emit = defineEmits(['back', 'select-memory', 'add', 'arrival-finished'])
 const islandStyle = computed(() => ({ '--island-color': props.island.color, '--island-accent': props.island.accent }))
 const islandArt = computed(() => artByIsland[props.island.id])
+const arrivingMemory = computed(() => props.memories.find((memory) => memory.id === props.arrivalMemoryId))
 const activeCreature = ref(null)
 let creatureMessageTimer
 
@@ -96,10 +98,28 @@ function greetCreature(creature) {
         <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center text-white/60">
           <LoaderCircle class="animate-spin" :size="24" />
         </div>
+        <Transition name="memory-arrival-layer">
+          <div
+            v-if="arrivingMemory"
+            :key="arrivingMemory.id"
+            class="memory-arrival"
+            :style="{ '--arrival-x': `${arrivingMemory.x}%`, '--arrival-y': `${arrivingMemory.y}%` }"
+            aria-hidden="true"
+            @animationend="emit('arrival-finished')"
+          >
+            <span class="memory-arrival-trail" />
+            <span v-for="star in 7" :key="star" class="memory-arrival-star" :style="{ '--star-delay': `${star * 55}ms` }" />
+            <span class="memory-arrival-orb" :style="{ borderColor: island.color }">
+              <img v-if="arrivingMemory.imageUrl" :src="arrivingMemory.imageUrl" alt="" />
+              <Heart v-else :size="24" :style="{ color: island.color }" />
+            </span>
+          </div>
+        </Transition>
         <button
           v-for="memory in memories"
           :key="memory.id"
           class="memory-orb group absolute z-10 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border-2 sm:h-20 sm:w-20"
+          :class="{ 'memory-orb-arriving': memory.id === arrivalMemoryId }"
           :style="{ left: `${memory.x}%`, top: `${memory.y}%`, borderColor: island.color }"
           :title="memory.title"
           @click="emit('select-memory', memory)"

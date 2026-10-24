@@ -27,6 +27,7 @@ const showAddModal = ref(false)
 const loading = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
+const arrivalMemoryId = ref(null)
 const errorMessage = ref('')
 
 const selectedIsland = computed(() => selectedIslandId.value ? getIslandById(selectedIslandId.value) : null)
@@ -60,6 +61,7 @@ function goHome() {
   selectedIslandId.value = null
   selectedMemory.value = null
   showAddModal.value = false
+  arrivalMemoryId.value = null
 }
 
 function returnToWelcome() {
@@ -68,6 +70,7 @@ function returnToWelcome() {
   showAddModal.value = false
   hasEnteredWorld.value = false
   focusIslandId.value = null
+  arrivalMemoryId.value = null
 }
 
 function enterWorld(islandId) {
@@ -85,13 +88,20 @@ async function saveNewMemory(payload) {
   try {
     const savedMemory = await createMemory(payload)
     allMemories.value = [savedMemory, ...allMemories.value]
-    if (selectedIslandId.value === payload.islandId) memories.value = [savedMemory, ...memories.value]
+    if (selectedIslandId.value === payload.islandId) {
+      memories.value = [savedMemory, ...memories.value]
+      arrivalMemoryId.value = savedMemory.id
+    }
     showAddModal.value = false
   } catch (error) {
     errorMessage.value = error.message || '記憶儲存失敗，請稍後再試。'
   } finally {
     saving.value = false
   }
+}
+
+function finishMemoryArrival() {
+  arrivalMemoryId.value = null
 }
 
 async function removeMemory(memory) {
@@ -139,9 +149,11 @@ onMounted(async () => {
     :island="selectedIsland"
     :memories="memories"
     :loading="loading"
+    :arrival-memory-id="arrivalMemoryId"
     @back="goHome"
     @add="showAddModal = true"
     @select-memory="selectedMemory = $event"
+    @arrival-finished="finishMemoryArrival"
   />
 
   <div v-if="errorMessage" class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-red-500 px-5 py-3 text-xs text-white shadow-lg">
