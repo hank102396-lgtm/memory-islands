@@ -18,6 +18,13 @@ const emit = defineEmits(['back', 'select-memory', 'add', 'arrival-finished'])
 const islandStyle = computed(() => ({ '--island-color': props.island.color, '--island-accent': props.island.accent }))
 const islandArt = computed(() => artByIsland[props.island.id])
 const arrivingMemory = computed(() => props.memories.find((memory) => memory.id === props.arrivalMemoryId))
+const arrivalStars = Array.from({ length: 28 }, (_, index) => ({
+  id: index,
+  left: `${(index * 37) % 101}%`,
+  top: `${(index * 61) % 101}%`,
+  delay: `${(index % 8) * 70}ms`,
+  scale: 1 + (index % 3) * 0.45,
+}))
 const activeCreature = ref(null)
 let creatureMessageTimer
 
@@ -51,6 +58,41 @@ function greetCreature(creature) {
 </script>
 
 <template>
+  <Teleport to="body">
+    <Transition name="memory-arrival-layer">
+      <div
+        v-if="arrivingMemory"
+        :key="arrivingMemory.id"
+        class="memory-arrival-screen"
+        :style="islandStyle"
+        aria-hidden="true"
+        @animationend.self="emit('arrival-finished')"
+      >
+        <div class="memory-arrival-vortex" />
+        <div class="memory-arrival-rays">
+          <span v-for="ray in 14" :key="ray" :style="{ '--ray-angle': `${ray * 25.7}deg`, '--ray-delay': `${ray * 35}ms` }" />
+        </div>
+        <div class="memory-arrival-stars">
+          <span
+            v-for="star in arrivalStars"
+            :key="star.id"
+            class="memory-arrival-star"
+            :style="{ left: star.left, top: star.top, '--star-delay': star.delay, '--star-scale': star.scale }"
+          />
+        </div>
+        <div class="memory-arrival-projectile">
+          <div class="memory-arrival-burst">
+            <span v-for="burst in 16" :key="burst" :style="{ '--burst-angle': `${burst * 22.5}deg`, '--burst-delay': `${burst * 28}ms` }" />
+          </div>
+          <span class="memory-arrival-trail" />
+          <span class="memory-arrival-orb" :style="{ borderColor: island.color }">
+            <img v-if="arrivingMemory.imageUrl" :src="arrivingMemory.imageUrl" alt="" />
+            <Heart v-else :size="42" :style="{ color: island.color }" />
+          </span>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
   <main class="min-h-screen overflow-hidden bg-night text-white" :style="islandStyle">
     <div class="island-space relative min-h-screen px-5 py-7 sm:px-10 lg:px-16">
       <header class="relative z-20 mx-auto flex max-w-6xl items-center justify-between">
@@ -98,23 +140,6 @@ function greetCreature(creature) {
         <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center text-white/60">
           <LoaderCircle class="animate-spin" :size="24" />
         </div>
-        <Transition name="memory-arrival-layer">
-          <div
-            v-if="arrivingMemory"
-            :key="arrivingMemory.id"
-            class="memory-arrival"
-            :style="{ '--arrival-x': `${arrivingMemory.x}%`, '--arrival-y': `${arrivingMemory.y}%` }"
-            aria-hidden="true"
-            @animationend="emit('arrival-finished')"
-          >
-            <span class="memory-arrival-trail" />
-            <span v-for="star in 7" :key="star" class="memory-arrival-star" :style="{ '--star-delay': `${star * 55}ms` }" />
-            <span class="memory-arrival-orb" :style="{ borderColor: island.color }">
-              <img v-if="arrivingMemory.imageUrl" :src="arrivingMemory.imageUrl" alt="" />
-              <Heart v-else :size="24" :style="{ color: island.color }" />
-            </span>
-          </div>
-        </Transition>
         <button
           v-for="memory in memories"
           :key="memory.id"
