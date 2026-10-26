@@ -20,6 +20,9 @@ button { cursor: pointer; }
 .welcome-scene::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,17,49,.55) 0%, transparent 40%, rgba(27,15,38,.45) 100%); pointer-events: none; }
 .welcome-sunset-glow { position: absolute; z-index: 1; left: 50%; top: 48%; height: 28vmin; width: 28vmin; min-height: 180px; min-width: 180px; transform: translate(-50%, -50%); border-radius: 50%; background: #ffd39a; box-shadow: 0 0 80px 35px rgba(255,181,112,.45), 0 0 180px 80px rgba(238,115,107,.2); opacity: .62; filter: blur(2px); }
 .welcome-landscape { position: absolute; z-index: 2; inset: 0; overflow: hidden; pointer-events: none; }
+.welcome-navigation { position: absolute; z-index: 12; top: 5.2rem; left: 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+.welcome-navigation button { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(10,20,50,.36); padding: .5rem .75rem; color: rgba(255,255,255,.75); font-size: .72rem; backdrop-filter: blur(10px); transition: .2s; }
+.welcome-navigation button:hover, .welcome-navigation button:focus-visible { border-color: rgba(255,229,137,.7); background: rgba(255,255,255,.16); color: #fff6cf; transform: translateY(-1px); }
 .welcome-hill { position: absolute; bottom: 22%; border-radius: 50% 50% 0 0; transform: rotate(-4deg); }
 .welcome-hill-back { left: -12%; height: 31%; width: 70%; background: linear-gradient(160deg, #432942, #2b2038 72%); box-shadow: 0 -18px 45px rgba(247,138,100,.12); }
 .welcome-hill-front { right: -18%; height: 37%; width: 82%; background: linear-gradient(160deg, #4b273f, #1d1932 72%); transform: rotate(6deg); }

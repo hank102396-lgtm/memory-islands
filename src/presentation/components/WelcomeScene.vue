@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { ArrowRight, Sparkles } from 'lucide-vue-next'
+import { ArrowRight, MailOpen, RotateCcw, Sparkles } from 'lucide-vue-next'
 import { audioService } from '../../infrastructure/audioService'
 
-const emit = defineEmits(['enter', 'start-sound'])
+const emit = defineEmits(['enter', 'start-sound', 'back-to-letter', 'back-to-start'])
 const entering = ref(false)
 const targetIslandId = ref(null)
 
@@ -33,6 +33,11 @@ function enterMemoryWorld(islandId) {
       <div class="welcome-river-light" />
       <div class="welcome-bank welcome-bank-left" /><div class="welcome-bank welcome-bank-right" />
     </div>
+
+    <nav class="welcome-navigation" aria-label="信件導覽">
+      <button type="button" @click="emit('back-to-letter')"><MailOpen :size="15" />回到信件</button>
+      <button type="button" @click="emit('back-to-start')"><RotateCcw :size="15" />重新開始</button>
+    </nav>
 
     <header class="welcome-copy">
       <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/70 backdrop-blur">

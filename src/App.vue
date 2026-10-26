@@ -20,6 +20,7 @@ const deleteMemory = createDeleteMemoryUseCase(firebaseService)
 const selectedIslandId = ref(null)
 const hasEnteredWorld = ref(false)
 const hasReadLetter = ref(false)
+const letterStartsOpened = ref(false)
 const focusIslandId = ref(null)
 const enteringIsland = ref(false)
 const memories = ref([])
@@ -92,6 +93,23 @@ function enterWorld(islandId) {
 
 function continueFromLetter() {
   hasReadLetter.value = true
+  letterStartsOpened.value = false
+}
+
+function returnToLetter() {
+  audioService.stopTrack()
+  audioService.stopAmbient()
+  hasEnteredWorld.value = false
+  hasReadLetter.value = false
+  letterStartsOpened.value = true
+}
+
+function returnToLetterStart() {
+  audioService.stopTrack()
+  audioService.stopAmbient()
+  hasEnteredWorld.value = false
+  hasReadLetter.value = false
+  letterStartsOpened.value = false
 }
 
 function toggleMusic() {
@@ -151,8 +169,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <LetterScene v-if="!hasReadLetter" @continue="continueFromLetter" />
-  <WelcomeScene v-else-if="!hasEnteredWorld" @enter="enterWorld" />
+  <LetterScene v-if="!hasReadLetter" :start-opened="letterStartsOpened" @continue="continueFromLetter" />
+  <WelcomeScene v-else-if="!hasEnteredWorld" @enter="enterWorld" @back-to-letter="returnToLetter" @back-to-start="returnToLetterStart" />
   <IslandSelector
     v-else-if="!selectedIsland"
     :total-memories="totalMemories"

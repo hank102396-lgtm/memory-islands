@@ -4,12 +4,16 @@ import { ArrowRight, Feather, LockKeyhole, Sparkles } from 'lucide-vue-next'
 import { audioService } from '../../infrastructure/audioService'
 
 const emit = defineEmits(['continue'])
+const props = defineProps({ startOpened: { type: Boolean, default: false } })
 const opened = ref(false)
 const leaving = ref(false)
 let islandMusicPreloadTimer
 
+opened.value = props.startOpened
+
 onMounted(() => {
   audioService.prepareTrack('./audio/forever-you.mp3')
+  if (opened.value) audioService.playAmbient('letter')
   islandMusicPreloadTimer = window.setTimeout(() => {
     audioService.prepareTrack('./audio/green-island.mp3')
     audioService.prepareTrack('./audio/golden-island.mp3')
