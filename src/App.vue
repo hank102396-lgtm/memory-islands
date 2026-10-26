@@ -81,7 +81,7 @@ function returnToWelcome() {
   hasEnteredWorld.value = false
   focusIslandId.value = null
   arrivalMemoryId.value = null
-  audioService.playTrack('./audio/forever-you.mp4')
+  audioService.playTrack('./audio/forever-you.mp3')
 }
 
 function enterWorld(islandId) {

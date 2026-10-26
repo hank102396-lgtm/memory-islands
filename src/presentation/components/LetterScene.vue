@@ -8,7 +8,7 @@ const opened = ref(false)
 const leaving = ref(false)
 
 onMounted(() => {
-  audioService.prepareTrack('./audio/forever-you.mp4')
+  audioService.prepareTrack('./audio/forever-you.mp3')
 })
 
 function openLetter() {
