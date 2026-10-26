@@ -1,15 +1,23 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { ArrowRight, Feather, LockKeyhole, Sparkles } from 'lucide-vue-next'
 import { audioService } from '../../infrastructure/audioService'
 
 const emit = defineEmits(['continue'])
 const opened = ref(false)
 const leaving = ref(false)
+let islandMusicPreloadTimer
 
 onMounted(() => {
   audioService.prepareTrack('./audio/forever-you.mp3')
+  islandMusicPreloadTimer = window.setTimeout(() => {
+    audioService.prepareTrack('./audio/green-island.mp3')
+    audioService.prepareTrack('./audio/golden-island.mp3')
+    audioService.prepareTrack('./audio/blue-island.mp3')
+  }, 3500)
 })
+
+onBeforeUnmount(() => window.clearTimeout(islandMusicPreloadTimer))
 
 function openLetter() {
   audioService.playCuteClick()
