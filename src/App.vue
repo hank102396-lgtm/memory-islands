@@ -11,6 +11,8 @@ import { firebaseService } from './infrastructure/firebaseService'
 import { createFetchMemoriesUseCase } from './usecases/fetchMemoriesUseCase'
 import { createCreateMemoryUseCase } from './usecases/createMemoryUseCase'
 import { createDeleteMemoryUseCase } from './usecases/deleteMemoryUseCase'
+import { audioService } from './infrastructure/audioService'
+import { Volume2, VolumeX } from 'lucide-vue-next'
 
 const fetchMemories = createFetchMemoriesUseCase(firebaseService)
 const createMemory = createCreateMemoryUseCase(firebaseService)
@@ -29,6 +31,7 @@ const saving = ref(false)
 const deleting = ref(false)
 const arrivalMemoryId = ref(null)
 const errorMessage = ref('')
+const isMusicMuted = ref(audioService.muted)
 
 const selectedIsland = computed(() => selectedIslandId.value ? getIslandById(selectedIslandId.value) : null)
 const totalMemories = computed(() => allMemories.value.length)
@@ -39,6 +42,7 @@ const memoriesByIsland = computed(() => Object.fromEntries(ISLANDS.map((island) 
 
 async function selectIsland(island) {
   if (enteringIsland.value) return
+  audioService.playAmbient(island.id)
   errorMessage.value = ''
   loading.value = true
   enteringIsland.value = true
@@ -58,28 +62,41 @@ async function selectIsland(island) {
 }
 
 function goHome() {
+  const islandId = selectedIslandId.value
+  audioService.stopTrack()
+  audioService.stopAmbient()
   selectedIslandId.value = null
   selectedMemory.value = null
   showAddModal.value = false
   arrivalMemoryId.value = null
+  if (islandId) audioService.playAmbient(islandId)
 }
 
 function returnToWelcome() {
+  audioService.stopTrack()
+  audioService.stopAmbient()
   selectedIslandId.value = null
   selectedMemory.value = null
   showAddModal.value = false
   hasEnteredWorld.value = false
   focusIslandId.value = null
   arrivalMemoryId.value = null
+  audioService.playTrack('/audio/forever-you.mp4')
 }
 
 function enterWorld(islandId) {
   focusIslandId.value = islandId
   hasEnteredWorld.value = true
+  audioService.playAmbient(islandId)
 }
 
 function continueFromLetter() {
   hasReadLetter.value = true
+}
+
+function toggleMusic() {
+  isMusicMuted.value = !isMusicMuted.value
+  audioService.setMuted(isMusicMuted.value)
 }
 
 async function saveNewMemory(payload) {
@@ -155,6 +172,18 @@ onMounted(async () => {
     @select-memory="selectedMemory = $event"
     @arrival-finished="finishMemoryArrival"
   />
+
+  <button
+    class="audio-toggle"
+    type="button"
+    :aria-label="isMusicMuted ? '開啟音樂' : '關閉音樂'"
+    :title="isMusicMuted ? '開啟音樂' : '關閉音樂'"
+    @click="toggleMusic"
+  >
+    <VolumeX v-if="isMusicMuted" :size="19" />
+    <Volume2 v-else :size="19" />
+    <span>{{ isMusicMuted ? '音樂關閉' : '音樂開啟' }}</span>
+  </button>
 
   <div v-if="errorMessage" class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-red-500 px-5 py-3 text-xs text-white shadow-lg">
     {{ errorMessage }}

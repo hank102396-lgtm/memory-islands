@@ -33,10 +33,10 @@ const interactiveCreatures = {
     { id: 'turtle', emoji: '🐢', name: '海龜', message: '你不知道要付 30 萬才可以摸嗎？' },
     { id: 'whale', emoji: '🐳', name: '暖鯨魚', message: '噓，小聲一點，我正在唱海底情歌。' },
     { id: 'fish', emoji: '🐠', name: '小魚', message: '今天的海流，很適合去約會！' },
-    { id: 'jellyfish', emoji: '🪼', name: '水母', message: '我沒有帶傘，但我會發光。' },
+    { id: 'jellyfish', emoji: '🪼', name: '水母', message: '我沒有帶傘，但我願意跟你一起淋雨漫步。' },
   ],
   green: [
-    { id: 'deer', emoji: '🦌', name: '小鹿', message: '你知道我為什麼一直看著你嗎？因為我對你鹿有獨鍾。' },
+    { id: 'deer', emoji: '🦌', name: '小鹿', message: '你知道我為什麼一直看著你嗎？因為我對你小鹿亂撞。' },
     { id: 'rabbit', emoji: '🐰', name: '兔兔', message: '你是不是偷走我的胡蘿蔔？不然我怎麼會一直對你心動。' },
     { id: 'squirrel', emoji: '🐿️', name: '松鼠', message: '我不是松鼠，但我想把你收藏一輩子。' },
     { id: 'owl', emoji: '🦉', name: '貓頭鷹', message: '你是我的晚安，也是我每天最期待的早安。' },
@@ -125,14 +125,14 @@ function greetCreature(creature) {
             :aria-label="`和${creature.name}互動`"
             @click="greetCreature(creature)"
           >
-            <span class="creature-bubble"><span>{{ creature.emoji }}</span></span>
+            <span class="creature-bubble"><span v-if="creature.id !== 'jellyfish'">{{ creature.emoji }}</span><span v-else class="jellyfish-icon" aria-hidden="true" /></span>
             <small>{{ creature.name }}</small>
           </button>
         </div>
         <Transition name="creature-message">
           <div v-if="activeCreature" class="creature-message">
             <span class="message-tail" />
-            <span class="message-emoji">{{ activeCreature.emoji }}</span>
+            <span class="message-emoji"><span v-if="activeCreature.id !== 'jellyfish'">{{ activeCreature.emoji }}</span><span v-else class="jellyfish-icon" aria-hidden="true" /></span>
             <span><strong>{{ activeCreature.name }}</strong>：{{ activeCreature.message }}</span>
             <button type="button" aria-label="關閉訊息" @click="activeCreature = null">×</button>
           </div>

@@ -2,8 +2,10 @@ const AudioContextClass = window.AudioContext || window.webkitAudioContext
 
 let audioContext
 let activeScene = null
+let trackAudio = null
 let muted = false
 const MASTER_VOLUME = 0.92
+const TRACK_VOLUME = 0.34
 
 function getContext() {
   if (!AudioContextClass) return null
@@ -96,8 +98,56 @@ function stopActiveScene() {
   activeScene = null
 }
 
+function stopTrack() {
+  if (!trackAudio) return
+  trackAudio.pause()
+  trackAudio.currentTime = 0
+  trackAudio = null
+}
+
 export const audioService = {
+  stopTrack() {
+    stopTrack()
+  },
+
+  playTrack(source) {
+    stopActiveScene()
+    stopTrack()
+    trackAudio = new Audio(source)
+    trackAudio.loop = true
+    trackAudio.preload = 'auto'
+    trackAudio.volume = muted ? 0 : TRACK_VOLUME
+    trackAudio.play().catch(() => {})
+  },
+
+  async playCuteClick() {
+    const context = getContext()
+    if (!context || muted) return
+    await context.resume()
+    const bus = makeSoundBus(context)
+    playTone(context, bus, 660, .12, 'sine', .11)
+    window.setTimeout(() => playTone(context, bus, 880, .16, 'sine', .09), 55)
+    window.setTimeout(() => bus.disconnect(), 300)
+  },
+
   async playAmbient(islandId) {
+    stopTrack()
+    if (islandId === 'letter') {
+      this.playTrack('/audio/forever-you.mp4')
+      return
+    }
+    if (islandId === 'green') {
+      this.playTrack('/audio/green-island.mp3')
+      return
+    }
+    if (islandId === 'golden') {
+      this.playTrack('/audio/golden-island.mp4')
+      return
+    }
+    if (islandId === 'blue') {
+      this.playTrack('/audio/blue-island.mp4')
+      return
+    }
     const context = getContext()
     if (!context) return
     await context.resume()
@@ -146,6 +196,7 @@ export const audioService = {
   setMuted(nextMuted) {
     muted = nextMuted
     if (activeScene) activeScene.bus.gain.value = muted ? 0 : MASTER_VOLUME
+    if (trackAudio) trackAudio.volume = muted ? 0 : TRACK_VOLUME
   },
 
   get muted() { return muted },

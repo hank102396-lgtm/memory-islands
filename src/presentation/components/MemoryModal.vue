@@ -13,7 +13,7 @@ const dateText = computed(() => new Intl.DateTimeFormat('zh-TW', { year: 'numeri
 
 <template>
   <div class="modal-backdrop" @click.self="emit('close')">
-    <article class="relative max-h-[90vh] w-full max-w-lg overflow-hidden rounded-[2rem] bg-[#fffdf7] text-ink shadow-2xl">
+    <article class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[2rem] bg-[#fffdf7] text-ink shadow-2xl">
       <button class="absolute right-4 top-4 z-10 rounded-full bg-black/30 p-2 text-white backdrop-blur transition hover:bg-black/50" aria-label="關閉" @click="emit('close')"><X :size="19" /></button>
       <div class="h-64 bg-slate-100 sm:h-80">
         <img v-if="memory.imageUrl" :src="memory.imageUrl" :alt="memory.title" class="h-full w-full object-cover" />

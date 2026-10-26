@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ArrowRight, Sparkles } from 'lucide-vue-next'
+import { audioService } from '../../infrastructure/audioService'
 
 const emit = defineEmits(['enter', 'start-sound'])
 const entering = ref(false)
@@ -8,6 +9,7 @@ const targetIslandId = ref(null)
 
 function enterMemoryWorld(islandId) {
   if (entering.value) return
+  audioService.playCuteClick()
   targetIslandId.value = islandId
   entering.value = true
   emit('start-sound', islandId)
@@ -19,6 +21,18 @@ function enterMemoryWorld(islandId) {
   <main class="welcome-scene" :class="{ 'is-entering': entering }">
     <div class="stars stars-one" /><div class="stars stars-two" />
     <div class="welcome-nebula nebula-left" /><div class="welcome-nebula nebula-right" />
+    <div class="welcome-sunset-glow" aria-hidden="true" />
+    <div class="welcome-landscape" aria-hidden="true">
+      <div class="welcome-hill welcome-hill-back" />
+      <div class="welcome-hill welcome-hill-front" />
+      <div class="welcome-village">
+        <span class="welcome-house house-one" /><span class="welcome-house house-two" />
+        <span class="welcome-house house-three" /><span class="welcome-house house-four" />
+      </div>
+      <div class="welcome-river" />
+      <div class="welcome-river-light" />
+      <div class="welcome-bank welcome-bank-left" /><div class="welcome-bank welcome-bank-right" />
+    </div>
 
     <header class="welcome-copy">
       <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/70 backdrop-blur">
