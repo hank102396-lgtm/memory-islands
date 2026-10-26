@@ -1,11 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ArrowRight, Feather, LockKeyhole, Sparkles } from 'lucide-vue-next'
 import { audioService } from '../../infrastructure/audioService'
 
 const emit = defineEmits(['continue'])
 const opened = ref(false)
 const leaving = ref(false)
+
+onMounted(() => {
+  audioService.prepareTrack('./audio/forever-you.mp4')
+})
 
 function openLetter() {
   audioService.playCuteClick()

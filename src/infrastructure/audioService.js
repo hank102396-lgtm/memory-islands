@@ -3,6 +3,7 @@ const AudioContextClass = window.AudioContext || window.webkitAudioContext
 let audioContext
 let activeScene = null
 let trackAudio = null
+const trackCache = new Map()
 let muted = false
 const MASTER_VOLUME = 0.92
 const TRACK_VOLUME = 0.34
@@ -105,6 +106,15 @@ function stopTrack() {
   trackAudio = null
 }
 
+function createTrack(source) {
+  const audio = new Audio(new URL(source, document.baseURI).href)
+  audio.loop = true
+  audio.preload = 'auto'
+  audio.playsInline = true
+  trackCache.set(source, audio)
+  return audio
+}
+
 export const audioService = {
   stopTrack() {
     stopTrack()
@@ -113,12 +123,15 @@ export const audioService = {
   playTrack(source) {
     stopActiveScene()
     stopTrack()
-    trackAudio = new Audio(new URL(source, document.baseURI).href)
-    trackAudio.loop = true
-    trackAudio.preload = 'auto'
-    trackAudio.playsInline = true
+    trackAudio = trackCache.get(source) ?? createTrack(source)
+    trackAudio.currentTime = 0
     trackAudio.volume = muted ? 0 : TRACK_VOLUME
     trackAudio.play().catch(() => {})
+  },
+
+  prepareTrack(source) {
+    const audio = trackCache.get(source) ?? createTrack(source)
+    audio.load()
   },
 
   resumeTrack() {
