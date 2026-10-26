@@ -113,10 +113,16 @@ export const audioService = {
   playTrack(source) {
     stopActiveScene()
     stopTrack()
-    trackAudio = new Audio(source)
+    trackAudio = new Audio(new URL(source, document.baseURI).href)
     trackAudio.loop = true
     trackAudio.preload = 'auto'
+    trackAudio.playsInline = true
     trackAudio.volume = muted ? 0 : TRACK_VOLUME
+    trackAudio.play().catch(() => {})
+  },
+
+  resumeTrack() {
+    if (!trackAudio || muted) return
     trackAudio.play().catch(() => {})
   },
 
@@ -197,6 +203,7 @@ export const audioService = {
     muted = nextMuted
     if (activeScene) activeScene.bus.gain.value = muted ? 0 : MASTER_VOLUME
     if (trackAudio) trackAudio.volume = muted ? 0 : TRACK_VOLUME
+    if (!muted) this.resumeTrack()
   },
 
   get muted() { return muted },

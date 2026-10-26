@@ -97,6 +97,7 @@ function continueFromLetter() {
 function toggleMusic() {
   isMusicMuted.value = !isMusicMuted.value
   audioService.setMuted(isMusicMuted.value)
+  if (!isMusicMuted.value) audioService.resumeTrack()
 }
 
 async function saveNewMemory(payload) {
