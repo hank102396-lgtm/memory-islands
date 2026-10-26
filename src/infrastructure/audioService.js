@@ -133,19 +133,19 @@ export const audioService = {
   async playAmbient(islandId) {
     stopTrack()
     if (islandId === 'letter') {
-      this.playTrack('/audio/forever-you.mp4')
+      this.playTrack('./audio/forever-you.mp4')
       return
     }
     if (islandId === 'green') {
-      this.playTrack('/audio/green-island.mp3')
+      this.playTrack('./audio/green-island.mp3')
       return
     }
     if (islandId === 'golden') {
-      this.playTrack('/audio/golden-island.mp4')
+      this.playTrack('./audio/golden-island.mp4')
       return
     }
     if (islandId === 'blue') {
-      this.playTrack('/audio/blue-island.mp4')
+      this.playTrack('./audio/blue-island.mp4')
       return
     }
     const context = getContext()
