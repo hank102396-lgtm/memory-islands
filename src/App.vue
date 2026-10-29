@@ -7,7 +7,7 @@ import IslandView from './presentation/components/IslandView.vue'
 import MemoryModal from './presentation/components/MemoryModal.vue'
 import AddMemoryModal from './presentation/components/AddMemoryModal.vue'
 import { ISLANDS, getIslandById } from './domain/island'
-import { firebaseService } from './infrastructure/firebaseService'
+import { supabaseService } from './infrastructure/supabaseService'
 import { createFetchMemoriesUseCase } from './usecases/fetchMemoriesUseCase'
 import { createCreateMemoryUseCase } from './usecases/createMemoryUseCase'
 import { createDeleteMemoryUseCase } from './usecases/deleteMemoryUseCase'
@@ -15,10 +15,10 @@ import { createSubscribeMemoriesUseCase } from './usecases/subscribeMemoriesUseC
 import { audioService } from './infrastructure/audioService'
 import { Volume2, VolumeX } from 'lucide-vue-next'
 
-const fetchMemories = createFetchMemoriesUseCase(firebaseService)
-const createMemory = createCreateMemoryUseCase(firebaseService)
-const deleteMemory = createDeleteMemoryUseCase(firebaseService)
-const subscribeMemories = createSubscribeMemoriesUseCase(firebaseService)
+const fetchMemories = createFetchMemoriesUseCase(supabaseService)
+const createMemory = createCreateMemoryUseCase(supabaseService)
+const deleteMemory = createDeleteMemoryUseCase(supabaseService)
+const subscribeMemories = createSubscribeMemoriesUseCase(supabaseService)
 const selectedIslandId = ref(null)
 const hasEnteredWorld = ref(false)
 const hasReadLetter = ref(false)
@@ -169,7 +169,7 @@ function replaceIslandMemories(islandId, islandMemories) {
 }
 
 function startMemorySync() {
-  if (!firebaseService.isConnected) return
+  if (!supabaseService.isConnected) return
 
   ISLANDS.forEach((island) => {
     const unsubscribe = subscribeMemories(
