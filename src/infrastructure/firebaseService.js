@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getAuth, signInAnonymously } from 'firebase/auth'
 import {
   addDoc,
   collection,
@@ -9,6 +10,7 @@ import {
   serverTimestamp,
   where,
   getDocs,
+  onSnapshot,
 } from 'firebase/firestore'
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage'
 import { localMemories } from './localPhotoService'
@@ -24,8 +26,10 @@ const firebaseConfig = {
 
 const hasFirebaseConfig = Object.values(firebaseConfig).every(Boolean)
 const firebaseApp = hasFirebaseConfig ? initializeApp(firebaseConfig) : null
+const auth = firebaseApp ? getAuth(firebaseApp) : null
 const firestore = firebaseApp ? getFirestore(firebaseApp) : null
 const storage = firebaseApp ? getStorage(firebaseApp) : null
+let authenticationPromise
 
 const demoMemories = [
   {
@@ -94,20 +98,65 @@ function saveDemoMemories(memories) {
   localStorage.setItem(localStorageKey(), JSON.stringify(memories))
 }
 
+async function ensureAuthenticated() {
+  if (!auth) return null
+  if (auth.currentUser) return auth.currentUser
+  authenticationPromise ??= signInAnonymously(auth).then(({ user }) => user)
+  return authenticationPromise
+}
+
+function getCloudMemories(snapshot) {
+  return snapshot.docs
+    .map((document) => ({ id: document.id, ...document.data() }))
+    .sort((left, right) => toTimestamp(right.createdAt) - toTimestamp(left.createdAt))
+}
+
+function mergeMemories(islandId, cloudMemories) {
+  const deletedIds = getDeletedMemoryIds()
+  return [
+    ...localMemories.filter((memory) => memory.islandId === islandId && !deletedIds.includes(memory.id)),
+    ...cloudMemories,
+  ]
+}
+
 export const firebaseService = {
   isConnected: hasFirebaseConfig,
 
   async fetchMemories(islandId) {
     if (!firestore) return getDemoMemories().filter((memory) => memory.islandId === islandId)
 
+    await ensureAuthenticated()
     // Sort in memory so a fresh Firebase project does not require a composite index.
     const memoriesQuery = query(collection(firestore, 'memories'), where('islandId', '==', islandId))
     const snapshot = await getDocs(memoriesQuery)
-    const cloudMemories = snapshot.docs
-      .map((document) => ({ id: document.id, ...document.data() }))
-      .sort((left, right) => toTimestamp(right.createdAt) - toTimestamp(left.createdAt))
-    const deletedIds = getDeletedMemoryIds()
-    return [...localMemories.filter((memory) => memory.islandId === islandId && !deletedIds.includes(memory.id)), ...cloudMemories]
+    return mergeMemories(islandId, getCloudMemories(snapshot))
+  },
+
+  subscribeMemories(islandId, onChange, onError) {
+    if (!firestore) {
+      onChange(getDemoMemories().filter((memory) => memory.islandId === islandId))
+      return () => {}
+    }
+
+    let disposed = false
+    let unsubscribe = () => {}
+    const memoriesQuery = query(collection(firestore, 'memories'), where('islandId', '==', islandId))
+
+    ensureAuthenticated()
+      .then(() => {
+        if (disposed) return
+        unsubscribe = onSnapshot(
+          memoriesQuery,
+          (snapshot) => onChange(mergeMemories(islandId, getCloudMemories(snapshot))),
+          onError,
+        )
+      })
+      .catch(onError)
+
+    return () => {
+      disposed = true
+      unsubscribe()
+    }
   },
 
   async uploadImage(file) {
@@ -120,6 +169,7 @@ export const firebaseService = {
       })
     }
 
+    await ensureAuthenticated()
     const path = `memories/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`
     const imageRef = ref(storage, path)
     const snapshot = await uploadBytes(imageRef, file)
@@ -134,6 +184,7 @@ export const firebaseService = {
       return savedMemory
     }
 
+    await ensureAuthenticated()
     const document = await addDoc(collection(firestore, 'memories'), {
       ...memory,
       createdAt: serverTimestamp(),
@@ -147,6 +198,7 @@ export const firebaseService = {
       return
     }
 
+    await ensureAuthenticated()
     await deleteDoc(doc(firestore, 'memories', memory.id))
   },
 }

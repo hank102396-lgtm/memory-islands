@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import IslandSelector from './presentation/components/IslandSelector.vue'
 import WelcomeScene from './presentation/components/WelcomeScene.vue'
 import LetterScene from './presentation/components/LetterScene.vue'
@@ -11,12 +11,14 @@ import { firebaseService } from './infrastructure/firebaseService'
 import { createFetchMemoriesUseCase } from './usecases/fetchMemoriesUseCase'
 import { createCreateMemoryUseCase } from './usecases/createMemoryUseCase'
 import { createDeleteMemoryUseCase } from './usecases/deleteMemoryUseCase'
+import { createSubscribeMemoriesUseCase } from './usecases/subscribeMemoriesUseCase'
 import { audioService } from './infrastructure/audioService'
 import { Volume2, VolumeX } from 'lucide-vue-next'
 
 const fetchMemories = createFetchMemoriesUseCase(firebaseService)
 const createMemory = createCreateMemoryUseCase(firebaseService)
 const deleteMemory = createDeleteMemoryUseCase(firebaseService)
+const subscribeMemories = createSubscribeMemoriesUseCase(firebaseService)
 const selectedIslandId = ref(null)
 const hasEnteredWorld = ref(false)
 const hasReadLetter = ref(false)
@@ -33,6 +35,7 @@ const deleting = ref(false)
 const arrivalMemoryId = ref(null)
 const errorMessage = ref('')
 const isMusicMuted = ref(audioService.muted)
+const memoryUnsubscribers = []
 
 const selectedIsland = computed(() => selectedIslandId.value ? getIslandById(selectedIslandId.value) : null)
 const totalMemories = computed(() => allMemories.value.length)
@@ -157,6 +160,29 @@ async function removeMemory(memory) {
   }
 }
 
+function replaceIslandMemories(islandId, islandMemories) {
+  allMemories.value = [
+    ...allMemories.value.filter((memory) => memory.islandId !== islandId),
+    ...islandMemories,
+  ]
+  if (selectedIslandId.value === islandId) memories.value = islandMemories
+}
+
+function startMemorySync() {
+  if (!firebaseService.isConnected) return
+
+  ISLANDS.forEach((island) => {
+    const unsubscribe = subscribeMemories(
+      island.id,
+      (islandMemories) => replaceIslandMemories(island.id, islandMemories),
+      (error) => {
+        errorMessage.value = error.message || '無法同步雲端記憶，請檢查 Firebase 設定。'
+      },
+    )
+    if (typeof unsubscribe === 'function') memoryUnsubscribers.push(unsubscribe)
+  })
+}
+
 onMounted(async () => {
   // Preload a small global count for the landing page without coupling UI to storage.
   try {
@@ -165,6 +191,11 @@ onMounted(async () => {
   } catch (error) {
     errorMessage.value = error.message || '記憶暫時無法載入。'
   }
+  startMemorySync()
+})
+
+onBeforeUnmount(() => {
+  memoryUnsubscribers.splice(0).forEach((unsubscribe) => unsubscribe())
 })
 </script>
 
