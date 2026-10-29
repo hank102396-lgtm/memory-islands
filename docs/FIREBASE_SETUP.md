@@ -1,38 +1,42 @@
-# Firebase 跨裝置資料設定
+# Firebase and Cloudinary setup
 
-## 1. 建立 Firebase 專案
+## Firebase
 
-1. 在 Firebase Console 建立專案，新增 Web App。
-2. 開啟 Firestore Database。
-3. 開啟 Storage。
-4. 到 Authentication → Sign-in method，啟用 Anonymous 匿名登入。
+1. Create a Firebase project and a Web App.
+2. Create a Cloud Firestore database.
+3. In Authentication, enable the Anonymous sign-in provider.
+4. Publish the rules in `firestore.rules` from the Firestore Rules page.
 
-## 2. 本機設定
+Firebase Spark is enough for Firestore and authentication. Firebase Storage is not used by this project.
 
-複製 `.env.example` 為 `.env.local`，填入 Firebase Web App 的設定：
+## Cloudinary image storage
+
+1. Create a Cloudinary account and open the Cloudinary Console.
+2. Open Settings, then Upload presets.
+3. Create an upload preset and set its Signing mode to **Unsigned**.
+4. Restrict the preset to image files and set a reasonable maximum file size.
+5. Copy the Cloud name and the upload preset name.
+
+The browser uploads images directly to Cloudinary. The returned image URL is saved in the Firestore `memories` document.
+
+## Local environment
+
+Copy `.env.example` to `.env.local` and fill in the Firebase and Cloudinary values:
 
 ```env
-VITE_FIREBASE_API_KEY=你的 apiKey
-VITE_FIREBASE_AUTH_DOMAIN=你的 authDomain
-VITE_FIREBASE_PROJECT_ID=你的 projectId
-VITE_FIREBASE_STORAGE_BUCKET=你的 storageBucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=你的 messagingSenderId
-VITE_FIREBASE_APP_ID=你的 appId
+VITE_FIREBASE_API_KEY=your-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name
+VITE_CLOUDINARY_UPLOAD_PRESET=your-unsigned-upload-preset
 ```
 
-## 3. 套用資料庫規則
+## GitHub Pages
 
-專案內的 `firestore.rules` 與 `storage.rules` 會要求匿名登入後才能讀寫。可在 Firebase CLI 執行：
-
-```bash
-firebase deploy --only firestore:rules,storage
-```
-
-也可以將兩個規則檔案的內容貼到 Firebase Console 對應的 Rules 頁面並發布。
-
-## 4. GitHub Pages 設定
-
-在 GitHub Repository → Settings → Secrets and variables → Actions → New repository secret，新增以下 6 個 Secrets：
+Add the same eight values as Repository Secrets under Settings, Secrets and variables, Actions:
 
 - `VITE_FIREBASE_API_KEY`
 - `VITE_FIREBASE_AUTH_DOMAIN`
@@ -40,5 +44,7 @@ firebase deploy --only firestore:rules,storage
 - `VITE_FIREBASE_STORAGE_BUCKET`
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID`
+- `VITE_CLOUDINARY_CLOUD_NAME`
+- `VITE_CLOUDINARY_UPLOAD_PRESET`
 
-部署工作流程會在建置時注入這些設定。完成後，不同裝置開啟網站會共用 Firestore 的照片與留言，新增或刪除也會即時同步。
+The Pages workflow injects these values during the production build.

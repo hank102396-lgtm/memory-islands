@@ -29,6 +29,9 @@ const firebaseApp = hasFirebaseConfig ? initializeApp(firebaseConfig) : null
 const auth = firebaseApp ? getAuth(firebaseApp) : null
 const firestore = firebaseApp ? getFirestore(firebaseApp) : null
 const storage = firebaseApp ? getStorage(firebaseApp) : null
+const cloudinaryCloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+const cloudinaryUploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+const hasCloudinaryConfig = Boolean(cloudinaryCloudName && cloudinaryUploadPreset)
 let authenticationPromise
 
 const demoMemories = [
@@ -119,6 +122,21 @@ function mergeMemories(islandId, cloudMemories) {
   ]
 }
 
+async function uploadToCloudinary(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', cloudinaryUploadPreset)
+  formData.append('folder', 'memory-islands')
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`, {
+    method: 'POST',
+    body: formData,
+  })
+  const result = await response.json()
+  if (!response.ok) throw new Error(result.error?.message || '圖片上傳失敗。')
+  return result.secure_url || result.url
+}
+
 export const firebaseService = {
   isConnected: hasFirebaseConfig,
 
@@ -160,6 +178,9 @@ export const firebaseService = {
   },
 
   async uploadImage(file) {
+    if (hasCloudinaryConfig) return uploadToCloudinary(file)
+    if (firestore) throw new Error('尚未設定 Cloudinary 圖片儲存，請確認 GitHub Secrets。')
+
     if (!storage) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader()
