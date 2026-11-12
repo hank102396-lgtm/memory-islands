@@ -146,22 +146,31 @@ export const supabaseService = {
       return () => {}
     }
 
+    let pollingId = null
+    const refresh = () => {
+      this.fetchMemories(islandId).then(onChange).catch(onError)
+    }
+
     const channel = supabase
       .channel(`memories-${islandId}-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'memories', filter: `island_id=eq.${islandId}` },
-        () => {
-          this.fetchMemories(islandId).then(onChange).catch(onError)
-        },
+        refresh,
       )
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          if (pollingId === null) {
+            refresh()
+            pollingId = window.setInterval(refresh, 15000)
+          }
+          return
           onError?.(new Error('Supabase 即時同步連線失敗。'))
         }
       })
 
     return () => {
+      if (pollingId !== null) window.clearInterval(pollingId)
       supabase.removeChannel(channel)
     }
   },
